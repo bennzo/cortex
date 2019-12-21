@@ -37,6 +37,7 @@ class Thought:
         msg += header_enc + thought_enc
         return msg
 
+    @staticmethod
     def deserialize(data):
         uid, ts, thought_size = struct.unpack(HEADER_FORMAT, data[:20])
         ts = datetime.fromtimestamp(ts)

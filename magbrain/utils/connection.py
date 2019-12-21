@@ -1,7 +1,10 @@
 import socket
+import struct
 
 
 class Connection:
+    data_sz_fmt = '<L'
+
     def __init__(self, socket):
         self.sock = socket
 
@@ -25,10 +28,14 @@ class Connection:
         return cls(sock)
 
     def send(self, data):
-        sent = self.sock.sendall(data)
+        data_size = struct.pack(Connection.data_sz_fmt, len(data))
+        sent = self.sock.sendall(data_size + data)
         return sent
 
-    def receive(self, size):
+    def receive(self, size=None):
+        if size is None:
+            data_size = self.receive(size=struct.calcsize(Connection.data_sz_fmt))
+            size = struct.unpack(Connection.data_sz_fmt, data_size)[0]
         data = b''
         while len(data) < size:
             chunk = self.sock.recv(size - len(data))

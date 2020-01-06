@@ -1,42 +1,61 @@
 import struct
 import datetime
+import bson.BSON
 from PIL import Image
 
 
-class Hello:
-    fmt_id_namesz = '<QL'
-    fmt_bd_gen = '<Lc'
+class User:
+    fmt_uid = '<Q'
+    fmt_namesize = '<L'
+    fmt_birthday = '<L'
+    fmt_gender = '<c'
 
-    def __init__(self, user_id, user_name, user_bd, user_gen):
-        self.user_id = user_id
-        self.user_name = user_name
-        self.user_bd = user_bd
-        self.user_gen = user_gen
+    def __init__(self, uid, name, birthday, gender):
+        self.uid = uid
+        self.name = name
+        self.birthday = birthday
+        self.gender = gender
 
     def serialize(self):
-        e_id = self.user_id
-        e_name = self.user_name.encode()
-        e_name_sz = len(e_name)
-        e_bd = int(self.user_bd.timestamp())
-        e_gen = self.user_gen
-        msg = b''.join([struct.pack(Hello.fmt_id_namesz, e_id, e_name_sz),
-                        e_name,
-                        struct.pack(Hello.fmt_bd_gen, e_bd, e_gen)])
-        return msg
+        bson_repr = {'uid': self.uid,
+                     'name': self.name,
+                     'birthday': self.birthday,
+                     'gender': self.gender}
+        return bson.BSON.encode(bson_repr)
 
     @staticmethod
     def deserialize(data):
-        l, r = 0, struct.calcsize(Hello.fmt_id_namesz)
-        uid, name_sz = struct.unpack(Hello.fmt_id_namesz, data[l:r])
+        bson_repr = bson.decode_document(data)
+        return User(**bson_repr)
 
-        l, r = r, r+name_sz
+    def serialize2(self):
+        ename = self.name.encode()
+        ebd = int(self.birthday.timestamp())
+        msg = b''.join([struct.pack(User.fmt_uid, self.uid),
+                        struct.pack(User.fmt_namesize, len(ename)),
+                        ename,
+                        struct.pack(User.fmt_birthday, ebd),
+                        struct.pack(User.fmt_gender, self.gender)])
+        return msg
+
+    @staticmethod
+    def deserialize2(data):
+        l, r = 0, struct.calcsize(User.fmt_uid)
+        uid = struct.unpack(User.fmt_uid, data[l:r])
+
+        l, r = r, r+struct.calcsize(User.fmt_namesize)
+        namesize = struct.unpack(User.fmt_namesize, data[l:r])
+
+        l, r = r, r+namesize
         name = data[l:r].decode()
 
-        l, r = r, r+struct.calcsize(Hello.fmt_bd_gen)
-        bd, gen = struct.unpack(Hello.fmt_bd_gen, data[l:r])
-        bd = datetime.datetime.fromtimestamp(bd)
-        gen = gen.decode()
-        return Hello(uid, name, bd, gen)
+        l, r = r, r+struct.calcsize(User.fmt_birthday)
+        birthday = struct.unpack(User.fmt_birthday, data[l:r])
+        birthday = datetime.datetime.fromtimestamp(birthday)
+
+        l, r = r, r+struct.calcsize(User.fmt_gender)
+        gender = struct.unpack(User.fmt_gender, data[l:r]).decode()
+        return User(uid, name, birthday, gender)
 
 
 class Config:
@@ -116,3 +135,8 @@ class Snapshot:
         l, r = r, r+struct.calcsize(Snapshot.fmt_feelings)
         feelings = struct.unpack(Snapshot.fmt_feelings, data[l:r])
         return Snapshot(ts, translation, rotation, image_color, image_depth, feelings)
+
+if __name__ == '__main__':
+    import time
+    test = User(50, 'ben', int(time.time()), 'm')
+    test_bson = test.serialize()

@@ -1,38 +1,72 @@
 import struct
 import gzip
+from pathlib import Path
 import PIL.Image
 import PIL.ImageOps
 from datetime import datetime
-import cortex_pb2
+from cortex.net.utils import cortex_pb2
+from .utils import cortex_pb2
 
 
 class Reader:
+    '''
+    Mind sample reader class.
+
+    Initialized by a path to a mind sample file and parses the user information and snapshots it contains
+    according to the file extension (assuming that an appropriate parser for the extension exists).
+
+    Extending the Reader's parsing capability:
+    In order for the Reader to support new sample formats a new Driver class needs to be implemented
+    and match the following requirements:
+        Initialization:
+            - Initialized by the path to the mind sample file
+                i.e 'def __init__(self, path):'
+        Registration:
+            - Decorated by Reader.register_driver initialized with the appropriate extension
+                i.e. @Reader.register_driver('.mind')
+        Interface:
+            - read_user(): Reads the user information and returns a User instance as defined in '../net/protocol.py'
+            - read_snapshot(): Reads a snapshot and returns a Snapshot instance as defined in '../net/protocol.py'
+    '''
+
     drivers = {}
     msgsize_type = '<L'
 
-    def __init__(self, path, serialize_type):
-        self.driver = Reader.drivers[serialize_type](path)
-        self.user = self.driver.read_user()
-            # self.__dict__ = {**self.__dict__, **header}
+    def __init__(self, path):
+        self.path = Path(path)
+        self.driver = Reader.drivers[self.path.suffix](path)
+        self.user = self.read_user()
 
     def __iter__(self):
         return self
 
     def __next__(self):
         try:
-            return self.driver.read_snapshot()
+            return self.read_snapshot()
         except EOFError:
             raise StopIteration
 
     @staticmethod
     def register_driver(name):
-        def decorator(c):
-            Reader.drivers[name] = c
-            return c
+        def decorator(driver):
+            Reader.drivers[name] = driver
+            return driver
         return decorator
 
+    def read_user(self):
+        user = self.driver.read_user()
+        if not isinstance(user, cortex_pb2.User):
+            raise TypeError('Unsupported User class')
+        return user
 
-@Reader.register_driver('protobuf')
+    def read_snapshot(self):
+        ss = self.driver.read_snapshot()
+        if not isinstance(ss, cortex_pb2.Snapshot):
+            raise TypeError('Unsupported Snapshot class')
+        return ss
+
+
+@Reader.register_driver('.gz')
 class DriverProtobuf:
     def __init__(self, path):
         self.fd = gzip.open(path, 'rb')
@@ -55,7 +89,7 @@ class DriverProtobuf:
         return snapshot
 
 
-@Reader.register_driver('binary')
+@Reader.register_driver('')
 class DriverBinary:
     def __init__(self, path):
         self.fd = open(path, 'rb')
@@ -110,6 +144,6 @@ class DriverBinary:
 
 
 if __name__ == '__main__':
-    reader = Reader('../../data/sample.mind.gz', 'protobuf')
+    reader = Reader('../../data/sample.mind.gz')
     for ss in reader:
         pass

@@ -1,6 +1,6 @@
 import struct
 import datetime
-import bson.BSON
+import bson
 from PIL import Image
 
 
@@ -90,7 +90,8 @@ class Snapshot:
     fmt_dep = '<LL'
     fmt_feelings = '<ffff'
 
-    def __init__(self, timestamp_ms,
+    def __init__(self,
+                 timestamp_ms,
                  translation=(0, 0, 0),
                  rotation=(0, 0, 0, 0),
                  image_color=None,

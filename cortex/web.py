@@ -1,5 +1,5 @@
 from pathlib import Path
-from ..website import Website
+from cortex.website import Website
 
 web = Website()
 

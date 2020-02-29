@@ -1,6 +1,7 @@
 import click
 import cortex
 import functools
+from cortex import client
 
 
 @click.group()

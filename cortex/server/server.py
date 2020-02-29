@@ -1,9 +1,8 @@
 import threading
-import struct
 from pathlib import Path
 from datetime import datetime
-from ..utils import Listener, parser
-from ..core import protocol
+from cortex.utils import Listener, parser
+from cortex.net import protocol
 
 HEADER_FORMAT = '<QQL'
 
@@ -63,3 +62,7 @@ class Server:
 def run_server(host, port, data):
     server = Server(host, int(port), data)
     return server()
+
+
+if __name__ == '__main__':
+    cli()

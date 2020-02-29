@@ -1,15 +1,15 @@
-import datetime
-from ..core import reader, protocol
-from ..utils import Connection
+from cortex.net import protocol
+from cortex.client import reader
+from cortex.utils import Connection
 
 HEADER_FORMAT = '<QQL'
 
 
 class Client:
-    def __init__(self, host, port, sample, sample_type):
+    def __init__(self, host, port, sample):
         self.host = host
         self.port = port
-        self.reader = reader.Reader(sample, sample_type)
+        self.reader = reader.Reader(sample)
         self.hello = protocol.Hello(self.reader.user_id,
                                     self.reader.user_name,
                                     self.reader.user_bdate,
@@ -25,10 +25,12 @@ class Client:
                 conn.send(supported_ss.serialize())
 
 
-def run_client(host, port, sample):
+def upload_sample(host, port, path):
     try:
-        client = Client(host, int(port), sample)
+        client = Client(host, port, path)
         client.run()
     except IOError as e:
         print(f'ERROR: {e}')
         return 1
+
+

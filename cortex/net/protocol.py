@@ -1,8 +1,5 @@
-import struct
-import datetime
 import bson
 from PIL import Image
-from .utils import cortex_pb2
 
 
 class User:
@@ -12,17 +9,17 @@ class User:
         self.birthday = birthday
         self.gender = gender
 
-    @staticmethod
-    def deserialize(data):
-        bson_repr = bson.decode(data)
-        return User(**bson_repr)
-
     def serialize(self):
         user_doc = {'uid': self.uid,
                     'name': self.name,
                     'birthday': self.birthday,
                     'gender': self.gender}
         return bson.encode(user_doc)
+
+    @staticmethod
+    def deserialize(data):
+        bson_repr = bson.decode(data)
+        return User(**bson_repr)
 
 
 class Config:
@@ -79,25 +76,83 @@ class Snapshot:
             return field_class
         return decorator
 
+
 @Snapshot.field('pose')
 class Pose:
-    def __init__(self, translation=(0,0,0), rotation=(0,0,0,0)):
-        pass
+    def __init__(self, translation=(0, 0, 0), rotation=(0, 0, 0, 0)):
+        self.translation = translation
+        self.rotation = rotation
+
+    def serialize(self):
+        pose_doc = {'translation': self.translation, 'rotation': self.rotation}
+        return bson.encode(pose_doc)
+
+    @staticmethod
+    def deserialize(data):
+        pose_doc = bson.decode(data)
+        return Pose(**pose_doc)
+
 
 @Snapshot.field('image_color')
 class ImageColor:
-    def __init__(self, image=None):
-        pass
+    def __init__(self, image_color=None):
+        self.image_color = image_color
+        self.height, self.width = image_color.shape
+
+    def serialize(self):
+        image_doc = {'image_color': b'' if self.image_color is None else self.image_color.tobytes(),
+                     'width': self.width,
+                     'height': self.height}
+        return bson.encode(image_doc)
+
+    @staticmethod
+    def deserialize(data):
+        image_doc = bson.decode(data)
+        image_bytes, w, h = image_doc['image_color'], image_doc['width'], image_doc['height']
+        image_color = None if len(image_bytes) == 0 else Image.frombytes('RGB', (w, h), image_bytes)
+        return ImageColor(image_color)
+
 
 @Snapshot.field('image_depth')
 class ImageDepth:
-    def __init__(self, image=None):
-        pass
+    def __init__(self, image_depth=None):
+        self.image_depth = image_depth
+        self.height, self.width = image_depth.shape
+
+    def serialize(self):
+        image_doc = {'image_depth': b'' if self.image_depth is None else self.image_depth.tobytes(),
+                     'width': self.width,
+                     'height': self.height}
+        return bson.encode(image_doc)
+
+    @staticmethod
+    def deserialize(data):
+        image_doc = bson.decode(data)
+        image_bytes, w, h = image_doc['image_depth'], image_doc['width'], image_doc['height']
+        image_depth = None if len(image_bytes) == 0 else Image.frombytes('F', (w, h), image_bytes)
+        return ImageColor(image_depth)
+
 
 @Snapshot.field('feelings')
 class Feelings:
-    def __init__(self, feelings=(0,0,0,0)):
-        pass
+    def __init__(self, hunger, thirst, exhaustion, happiness):
+        self.hunger = hunger
+        self.thirst = thirst
+        self.exhaustion = exhaustion
+        self.happiness = happiness
+
+    def serialize(self):
+        feelings_doc = {'hunger': self.hunger,
+                        'thirst': self.thirst,
+                        'exhaustion': self.exhaustion,
+                        'happiness': self.happiness}
+        return bson.encode(feelings_doc)
+
+    @staticmethod
+    def deserialize(data):
+        feelings_doc = bson.decode(data)
+        return Feelings(**feelings_doc)
+
 
 
 if __name__ == '__main__':

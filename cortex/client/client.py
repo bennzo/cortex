@@ -1,19 +1,15 @@
-from cortex.net import protocol
-from cortex.client import reader
-from cortex.utils import Connection
+import requests
+from . import reader
+from ..net import protocol, Connection
 
 HEADER_FORMAT = '<QQL'
 
 
 class Client:
-    def __init__(self, host, port, sample):
+    def __init__(self, host, port, sample, format):
         self.host = host
         self.port = port
-        self.reader = reader.Reader(sample)
-        self.hello = protocol.Hello(self.reader.user_id,
-                                    self.reader.user_name,
-                                    self.reader.user_bdate,
-                                    self.reader.user_gender)
+        self.reader = reader.Reader(sample, format)
 
     def run(self):
         for snapshot in self.reader:
@@ -25,12 +21,10 @@ class Client:
                 conn.send(supported_ss.serialize())
 
 
-def upload_sample(host, port, path):
+def upload_sample(host, port, path, sample_format='protobuf'):
     try:
-        client = Client(host, port, path)
+        client = Client(host, port, path, sample_format)
         client.run()
     except IOError as e:
         print(f'ERROR: {e}')
         return 1
-
-

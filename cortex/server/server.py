@@ -1,8 +1,9 @@
 import threading
+import flask
 from pathlib import Path
 from datetime import datetime
-from cortex.utils import Listener, parser
-from cortex.net import protocol
+from ..net import protocol, parser, Listener
+
 
 HEADER_FORMAT = '<QQL'
 
@@ -58,11 +59,26 @@ class Server:
             self.listener.stop()
         return 0
 
+def create_server(config):
+    app = flask.Flask('__name__')
 
-def run_server(host, port, data):
+    @app.route('/config', methods=['GET'])
+    def get_config():
+        config_string = protocol.Config(config).serialize()
+        pass
+
+    @app.route('/snapshot', methods=['POST'])
+    def post_snapshot():
+        pass
+
+
+
+def run_server(host, port, publish):
+    config = ['pose','image_color','image_depth','feelings']
+    app = flask.Flask(__name__)
+
+    @app.route('/')
+
+
     server = Server(host, int(port), data)
     return server()
-
-
-if __name__ == '__main__':
-    cli()

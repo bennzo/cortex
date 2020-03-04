@@ -1,11 +1,12 @@
 import struct
 import gzip
 from pathlib import Path
-import PIL.Image
-import PIL.ImageOps
 from datetime import datetime
-from cortex.net.utils import cortex_pb2
+
+from PIL import Image
+
 from .utils import cortex_pb2
+from ..net import protocol
 
 
 class Reader:
@@ -30,11 +31,10 @@ class Reader:
     '''
 
     drivers = {}
-    msgsize_type = '<L'
 
-    def __init__(self, path):
+    def __init__(self, path, driver_type):
         self.path = Path(path)
-        self.driver = Reader.drivers[self.path.suffix](path)
+        self.driver = Reader.drivers[driver_type](path)
         self.user = self.read_user()
 
     def __iter__(self):
@@ -55,23 +55,24 @@ class Reader:
 
     def read_user(self):
         user = self.driver.read_user()
-        if not isinstance(user, cortex_pb2.User):
+        if not isinstance(user, protocol.User):
             raise TypeError('Unsupported User class')
         return user
 
     def read_snapshot(self):
         ss = self.driver.read_snapshot()
-        if not isinstance(ss, cortex_pb2.Snapshot):
+        if not isinstance(ss, protocol.Snapshot):
             raise TypeError('Unsupported Snapshot class')
         return ss
 
 
-@Reader.register_driver('.gz')
+@Reader.register_driver('protobuf')
 class DriverProtobuf:
     def __init__(self, path):
         self.fd = gzip.open(path, 'rb')
         self.msg_size_format = '<L'
         self.msg_size_length = struct.calcsize(self.msg_size_format)
+        self.gender_enum = {0: 'm', 1: 'f', 2: 'o'}
 
     def __del__(self):
         self.fd.close()
@@ -80,70 +81,50 @@ class DriverProtobuf:
         msg_size, = struct.unpack(self.msg_size_format, self.fd.read(self.msg_size_length))
         user = cortex_pb2.User()
         user.ParseFromString(self.fd.read(msg_size))
-        return user
+
+        protocol_user = protocol.User(uid=user.user_id,
+                                      name=user.username,
+                                      birthday=datetime.fromtimestamp(user.birthday),
+                                      gender=self.gender_enum[user.gender])
+        return protocol_user
 
     def read_snapshot(self):
         msg_size, = struct.unpack(self.msg_size_format, self.fd.read(self.msg_size_length))
         snapshot = cortex_pb2.Snapshot()
         snapshot.ParseFromString(self.fd.read(msg_size))
-        return snapshot
+
+        pose = protocol.Pose(translation=(snapshot.pose.translation.x,
+                                          snapshot.pose.translation.y,
+                                          snapshot.pose.translation.z),
+                             rotation=(snapshot.pose.rotation.x,
+                                       snapshot.pose.rotation.y,
+                                       snapshot.pose.rotation.z,
+                                       snapshot.pose.rotation.w))
+
+        if len(snapshot.color_image.data) == 0:
+            image_color = None
+        else:
+            image_color = Image.frombytes('RGB',
+                                          (snapshot.color_image.width, snapshot.color_image.height),
+                                          snapshot.color_image.data)
+
+        if len(snapshot.depth_image.data) == 0:
+            image_depth = None
+        else:
+            image_depth = Image.frombytes('RGB',
+                                          (snapshot.depth_image.width, snapshot.depth_image.height),
+                                          snapshot.depth_image.data)
+
+        feelings = protocol.Feelings(hunger=snapshot.feelings.hunger,
+                                     thirst=snapshot.feelings.thirst,
+                                     exhaustion=snapshot.feelings.exhaustion,
+                                     happiness=snapshot.feelings.happiness)
+
+        protocol_snapshot = protocol.Snapshot(datetime.fromtimestamp(snapshot.datetime),
+                                              pose,
+                                              image_color,
+                                              image_depth,
+                                              feelings)
+        return protocol_snapshot
 
 
-@Reader.register_driver('')
-class DriverBinary:
-    def __init__(self, path):
-        self.fd = open(path, 'rb')
-
-        self.header_fmts = ['<QL', '<Lc']
-        self.header_names = ['user_id',
-                             'user_namesize',
-                             'user_name',
-                             'user_bdate',
-                             'user_gender']
-
-        self.snap_fmts = ['<QdddddddLL', '<LL', '<ffff']
-        self.snap_names = ['datetime',
-                           'loc_x', 'loc_y', 'loc_z',
-                           'rot_x', 'rot_y', 'rot_z', 'rot_w',
-                           'clr_h', 'clr_w', 'image_color',
-                           'dep_h', 'dep_w', 'image_depth',
-                           'hunger', 'thirst', 'exhaust', 'happy']
-
-    def read_user(self):
-        header_vals = []
-        for i, fmt in enumerate(self.header_fmts):
-            header_vals += struct.unpack(fmt, self.fd.read(struct.calcsize(fmt)))
-            if i == 0:
-                header_vals += [self.fd.read(header_vals[-1]).decode()]
-        # Convert birth timestamp to datetime
-        header_vals[3] = datetime.fromtimestamp(header_vals[3])
-        return dict(zip(self.header_names, header_vals))
-
-    def read_snapshot(self):
-        snap_vals = []
-        for i, fmt in enumerate(self.snap_fmts):
-            e_snap_vals = self.fd.read(struct.calcsize(fmt))
-            if e_snap_vals == b'':
-                raise EOFError
-            snap_vals += struct.unpack(fmt, e_snap_vals)
-            if i == 0:
-                h, w = snap_vals[-2], snap_vals[-1]
-                img_bin_bgr = self.fd.read(3*h*w)
-                img_rgb_flip = PIL.Image.frombytes('RGB', (w, h), img_bin_bgr[::-1])
-                img_rgb = PIL.ImageOps.flip(PIL.ImageOps.mirror(img_rgb_flip))
-                snap_vals += [img_rgb]
-            if i == 1:
-                h, w = snap_vals[-2], snap_vals[-1]
-                img_bin = self.fd.read(4*h*w)
-                snap_vals += [PIL.Image.frombytes('F', (w, h), img_bin)]
-        # Convert timestamp to datetime
-        snap_vals[0] = datetime.fromtimestamp(snap_vals[0] / 1000)
-        snapshot_dict = dict(zip(self.snap_names, snap_vals))
-        snapshot_dict['translation'] = (snapshot_dict['loc_x'], snapshot_dict['loc_y'], snapshot_dict['loc_z'])
-        return snapshot_dict
-
-
-if __name__ == '__main__':
-    reader = Reader('../../data/sample.mind.gz')
-    for ss in reader:
-        pass

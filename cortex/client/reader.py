@@ -1,5 +1,6 @@
 import struct
 import gzip
+import numpy as np
 from pathlib import Path
 from datetime import datetime
 
@@ -104,23 +105,24 @@ class DriverProtobuf:
         if len(snapshot.color_image.data) == 0:
             image_color = None
         else:
-            image_color = Image.frombytes('RGB',
-                                          (snapshot.color_image.width, snapshot.color_image.height),
-                                          snapshot.color_image.data)
+            image_color_arr = Image.frombytes('RGB',
+                                              (snapshot.color_image.width, snapshot.color_image.height),
+                                              snapshot.color_image.data)
+            image_color = protocol.ImageColor(image_color_arr)
 
         if len(snapshot.depth_image.data) == 0:
             image_depth = None
         else:
-            image_depth = Image.frombytes('RGB',
-                                          (snapshot.depth_image.width, snapshot.depth_image.height),
-                                          snapshot.depth_image.data)
+            image_depth_arr = np.array(snapshot.depth_image.data).reshape(snapshot.depth_image.width,
+                                                                          snapshot.depth_image.height)
+            image_depth = protocol.ImageDepth(Image.fromarray(image_depth_arr, 'F'))
 
         feelings = protocol.Feelings(hunger=snapshot.feelings.hunger,
                                      thirst=snapshot.feelings.thirst,
                                      exhaustion=snapshot.feelings.exhaustion,
                                      happiness=snapshot.feelings.happiness)
 
-        protocol_snapshot = protocol.Snapshot(datetime.fromtimestamp(snapshot.datetime),
+        protocol_snapshot = protocol.Snapshot(datetime.fromtimestamp(snapshot.datetime/1000),
                                               pose,
                                               image_color,
                                               image_depth,

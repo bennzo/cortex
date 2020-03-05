@@ -1,29 +1,42 @@
 import requests
 from . import reader
-from ..net import protocol, Connection
+from ..net import protocol
 
-HEADER_FORMAT = '<QQL'
+_CONFIG = {'sample_format': 'protobuf'}
 
 
 class Client:
-    def __init__(self, host, port, sample, format):
+    def __init__(self, host, port, sample, sample_format):
         self.host = host
         self.port = port
-        self.reader = reader.Reader(sample, format)
+        self.reader = reader.Reader(sample, sample_format)
 
     def run(self):
+        server_config = self._get_config()
         for snapshot in self.reader:
-            with Connection.connect(self.host, self.port) as conn:
-                conn.send(self.hello.serialize())
-                config = protocol.Config.deserialize(conn.receive())
-                supported_ss = protocol.Snapshot(snapshot['datetime'].timestamp(),
-                                                 **{f: snapshot[f] for f in config.fields})
-                conn.send(supported_ss.serialize())
+            self._post_snapshot(snapshot, server_config.parsers)
+
+    def _get_config(self):
+        response = requests.get(f'http://{self.host}:{self.port}/config')
+        if response.status_code == 200:
+            config = protocol.Config.deserialize(response.content)
+        else:
+            raise ConnectionError(f'Unable to get server configuration:\n'
+                                  f'Status:{response.status_code} Message:{response.reason}')
+        return config
+
+    def _post_snapshot(self, snapshot, fields):
+        response = requests.post(f'http://{self.host}:{self.port}/snapshot',
+                                 headers={'Content-Type': 'application/bson'},
+                                 data=snapshot.serialize(fields=fields))
+        if response.status_code != 200:
+            raise ConnectionError(f'Unable to send snapshot to server:\n'
+                                  f'Status:{response.status_code} Message:{response.reason}')
 
 
-def upload_sample(host, port, path, sample_format='protobuf'):
+def upload_sample(host, port, path):
     try:
-        client = Client(host, port, path, sample_format)
+        client = Client(host, port, path, _CONFIG['sample_format'])
         client.run()
     except IOError as e:
         print(f'ERROR: {e}')

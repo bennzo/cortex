@@ -37,7 +37,7 @@ class Config:
 
 
 class Snapshot:
-    fields = []
+    fields = {}
 
     def __init__(self,
                  timestamp_ms,
@@ -45,14 +45,14 @@ class Snapshot:
                  image_color=None,
                  image_depth=None,
                  feelings=None):
-        self.timestamp = timestamp_ms
+        self.timestamp_ms = timestamp_ms
         self.pose = pose
         self.image_color = image_color
         self.image_depth = image_depth
         self.feelings = feelings
 
     def serialize(self, fields=None):
-        snapshot_doc = {'timestamp': self.timestamp}
+        snapshot_doc = {'timestamp_ms': self.timestamp_ms}
         for field in fields or Snapshot.fields:
             snapshot_doc[field] = getattr(self, field).serialize()
         return bson.encode(snapshot_doc)
@@ -60,8 +60,12 @@ class Snapshot:
     @staticmethod
     def deserialize(data):
         snapshot_doc = bson.decode(data)
-        for field in snapshot_doc.keys():
-            snapshot_doc[field] = snapshot_doc.deserialize(snapshot_doc[field])
+        for fname, fclass in Snapshot.fields.items():
+            try:
+                snapshot_doc[fname] = fclass.deserialize(snapshot_doc[fname])
+            except Exception as e:
+                print(f'Error encoding field - <{fname}>:')
+                print(e)
         return Snapshot(**snapshot_doc)
 
     @staticmethod
@@ -72,7 +76,7 @@ class Snapshot:
     @staticmethod
     def field(name):
         def decorator(field_class):
-            Snapshot.fields.append(name)
+            Snapshot.fields[name] = field_class
             return field_class
         return decorator
 
@@ -97,7 +101,7 @@ class Pose:
 class ImageColor:
     def __init__(self, image_color=None):
         self.image_color = image_color
-        self.height, self.width = image_color.shape
+        self.width, self.height = image_color.size
 
     def serialize(self):
         image_doc = {'image_color': b'' if self.image_color is None else self.image_color.tobytes(),
@@ -117,7 +121,7 @@ class ImageColor:
 class ImageDepth:
     def __init__(self, image_depth=None):
         self.image_depth = image_depth
-        self.height, self.width = image_depth.shape
+        self.width, self.height = image_depth.size
 
     def serialize(self):
         image_doc = {'image_depth': b'' if self.image_depth is None else self.image_depth.tobytes(),
@@ -152,10 +156,3 @@ class Feelings:
     def deserialize(data):
         feelings_doc = bson.decode(data)
         return Feelings(**feelings_doc)
-
-
-
-if __name__ == '__main__':
-    import time
-    test = User(50, 'ben', int(time.time()), 'm')
-    test_bson = test.serialize()

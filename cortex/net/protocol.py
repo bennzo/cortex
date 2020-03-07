@@ -1,7 +1,7 @@
 import bson
 from PIL import Image
 
-
+# TODO: consider changing from serialize/deserialize to to_bson/from_bson to save redundant encoding
 class User:
     def __init__(self, uid, name, birthday, gender):
         self.uid = uid
@@ -101,7 +101,7 @@ class Pose:
 class ImageColor:
     def __init__(self, image_color=None):
         self.image_color = image_color
-        self.width, self.height = image_color.size
+        self.width, self.height = (0, 0) if image_color is None else image_color.size
 
     def serialize(self):
         image_doc = {'image_color': b'' if self.image_color is None else self.image_color.tobytes(),
@@ -121,7 +121,7 @@ class ImageColor:
 class ImageDepth:
     def __init__(self, image_depth=None):
         self.image_depth = image_depth
-        self.width, self.height = image_depth.size
+        self.width, self.height = (0, 0) if image_depth is None else image_depth.size
 
     def serialize(self):
         image_doc = {'image_depth': b'' if self.image_depth is None else self.image_depth.tobytes(),
@@ -139,7 +139,7 @@ class ImageDepth:
 
 @Snapshot.field('feelings')
 class Feelings:
-    def __init__(self, hunger, thirst, exhaustion, happiness):
+    def __init__(self, hunger=0, thirst=0, exhaustion=0, happiness=0):
         self.hunger = hunger
         self.thirst = thirst
         self.exhaustion = exhaustion

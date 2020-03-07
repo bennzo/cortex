@@ -1,5 +1,5 @@
 import click
-from .server import run_server
+from .server import _cli_run_server
 
 
 @click.group()
@@ -11,8 +11,8 @@ def cli():
 @click.option('--host', '-h', default='127.0.0.1', show_default=True, help='Server IP address')
 @click.option('--port', '-p', default=8000, show_default=True, help='Server port')
 @click.argument('message_queue', required=True)
-def _cli_run_server(host, port, message_queue):
-    run_server(host, port, message_queue)
+def _run_server(host, port, message_queue):
+    _cli_run_server(host, port, message_queue)
 
 
 if __name__ == '__main__':

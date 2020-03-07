@@ -12,8 +12,7 @@ def cli():
 @click.option('--port', '-p', default=8000, show_default=True, help='Server port')
 @click.option('--sample-format', default='protobuf', show_default=True, help='Format of the mind sample')
 @click.argument('sample_path', required=True)
-def _cli_upload_sample(host, port, sample_path, sample_format):
-    print(host, port, sample_path, sample_format)
+def _upload_sample(host, port, sample_path, sample_format):
     upload_sample(host, port, sample_path, sample_format)
 
 

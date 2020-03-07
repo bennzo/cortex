@@ -1,4 +1,5 @@
 import requests
+import bson
 from . import reader
 from ..net import protocol
 
@@ -10,6 +11,7 @@ class Client:
         self.host = host
         self.port = port
         self.reader = reader.Reader(sample, sample_format)
+        self.user = self.reader.user
 
     def run(self):
         server_config = self._get_config()
@@ -28,7 +30,8 @@ class Client:
     def _post_snapshot(self, snapshot, fields):
         response = requests.post(f'http://{self.host}:{self.port}/snapshot',
                                  headers={'Content-Type': 'application/bson'},
-                                 data=snapshot.serialize(fields=fields))
+                                 data=bson.encode({'user': self.user.serialize(),
+                                                   'snapshot': snapshot.serialize(fields=fields)}))
         if response.status_code != 200:
             raise ConnectionError(f'Unable to send snapshot to server:\n'
                                   f'Status:{response.status_code} Message:{response.reason}')

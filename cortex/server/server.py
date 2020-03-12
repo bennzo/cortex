@@ -3,13 +3,17 @@ from .app import app
 from ..utils import parse_url
 
 
-_CONFIG = {'PARSERS': ['pose', 'image_color', 'image_depth', 'feelings']}
+_CONFIG = {'PARSERS': ['pose', 'image_color', 'image_depth', 'feelings'],
+           'DATA_FOLDER': 'data/temp'}
 
 
+# TODO: Check if both publish and message_queue is None
 def setup_app(publish=None, message_queue=None):
     app.config.update(_CONFIG)
     if publish is None:
         scheme, host, port = parse_url(message_queue)
+        # Import a message queue module according to the url scheme
+        # and instantiate an appropriate client
         mq_module = importlib.import_module(name=f'..net.mq.{scheme}',
                                             package='cortex.server')
         publish = mq_module.SnapshotClient(host, port, **_CONFIG).publish

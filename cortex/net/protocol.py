@@ -1,7 +1,7 @@
 import bson
 from PIL import Image
 
-# TODO: consider changing from serialize/deserialize to to_bson/from_bson to save redundant encoding
+
 class User:
     def __init__(self, uid, name, birthday, gender):
         self.uid = uid
@@ -9,31 +9,29 @@ class User:
         self.birthday = birthday
         self.gender = gender
 
-    def serialize(self):
+    def to_bson(self):
         user_doc = {'uid': self.uid,
                     'name': self.name,
                     'birthday': self.birthday,
                     'gender': self.gender}
-        return bson.encode(user_doc)
+        return user_doc
 
     @staticmethod
-    def deserialize(data):
-        bson_repr = bson.decode(data)
-        return User(**bson_repr)
+    def from_bson(data):
+        return User(**data)
 
 
 class Config:
     def __init__(self, parsers):
         self.parsers = parsers
 
-    def serialize(self):
+    def to_bson(self):
         config_doc = {'parsers': self.parsers}
-        return bson.encode(config_doc)
+        return config_doc
 
     @staticmethod
-    def deserialize(data):
-        bson_repr = bson.decode(data)
-        return Config(**bson_repr)
+    def from_bson(data):
+        return Config(**data)
 
 
 class Snapshot:
@@ -51,25 +49,25 @@ class Snapshot:
         self.image_depth = image_depth
         self.feelings = feelings
 
-    def serialize(self, fields=None):
+    def to_bson(self, fields=None):
         snapshot_doc = {'timestamp_ms': self.timestamp_ms}
         for field in fields or Snapshot.fields:
-            snapshot_doc[field] = getattr(self, field).serialize()
-        return bson.encode(snapshot_doc)
+            snapshot_doc[field] = getattr(self, field).to_bson()
+        return snapshot_doc
 
     @staticmethod
-    def deserialize(data):
-        snapshot_doc = bson.decode(data)
+    def from_bson(data):
+        snapshot_doc = data
         for fname, fclass in Snapshot.fields.items():
             try:
-                snapshot_doc[fname] = fclass.deserialize(snapshot_doc[fname])
+                snapshot_doc[fname] = fclass.from_bson(snapshot_doc[fname])
             except Exception as e:
                 print(f'Error encoding field - <{fname}>:')
                 print(e)
         return Snapshot(**snapshot_doc)
 
     @staticmethod
-    def deserialize_partial(data):
+    def from_bson_partial(data):
         snapshot_doc = bson.decode(data)
         return Snapshot(**snapshot_doc)
 
@@ -87,13 +85,13 @@ class Pose:
         self.translation = translation
         self.rotation = rotation
 
-    def serialize(self):
+    def to_bson(self):
         pose_doc = {'translation': self.translation, 'rotation': self.rotation}
-        return bson.encode(pose_doc)
+        return pose_doc
 
     @staticmethod
-    def deserialize(data):
-        pose_doc = bson.decode(data)
+    def from_bson(data):
+        pose_doc = data
         return Pose(**pose_doc)
 
 
@@ -103,15 +101,15 @@ class ImageColor:
         self.image_color = image_color
         self.width, self.height = (0, 0) if image_color is None else image_color.size
 
-    def serialize(self):
+    def to_bson(self):
         image_doc = {'image_color': b'' if self.image_color is None else self.image_color.tobytes(),
                      'width': self.width,
                      'height': self.height}
-        return bson.encode(image_doc)
+        return image_doc
 
     @staticmethod
-    def deserialize(data):
-        image_doc = bson.decode(data)
+    def from_bson(data):
+        image_doc = data
         image_bytes, w, h = image_doc['image_color'], image_doc['width'], image_doc['height']
         image_color = None if len(image_bytes) == 0 else Image.frombytes('RGB', (w, h), image_bytes)
         return ImageColor(image_color)
@@ -123,15 +121,15 @@ class ImageDepth:
         self.image_depth = image_depth
         self.width, self.height = (0, 0) if image_depth is None else image_depth.size
 
-    def serialize(self):
+    def to_bson(self):
         image_doc = {'image_depth': b'' if self.image_depth is None else self.image_depth.tobytes(),
                      'width': self.width,
                      'height': self.height}
-        return bson.encode(image_doc)
+        return image_doc
 
     @staticmethod
-    def deserialize(data):
-        image_doc = bson.decode(data)
+    def from_bson(data):
+        image_doc = data
         image_bytes, w, h = image_doc['image_depth'], image_doc['width'], image_doc['height']
         image_depth = None if len(image_bytes) == 0 else Image.frombytes('F', (w, h), image_bytes)
         return ImageColor(image_depth)
@@ -145,14 +143,14 @@ class Feelings:
         self.exhaustion = exhaustion
         self.happiness = happiness
 
-    def serialize(self):
+    def to_bson(self):
         feelings_doc = {'hunger': self.hunger,
                         'thirst': self.thirst,
                         'exhaustion': self.exhaustion,
                         'happiness': self.happiness}
-        return bson.encode(feelings_doc)
+        return feelings_doc
 
     @staticmethod
-    def deserialize(data):
-        feelings_doc = bson.decode(data)
+    def from_bson(data):
+        feelings_doc = data
         return Feelings(**feelings_doc)

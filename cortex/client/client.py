@@ -21,7 +21,7 @@ class Client:
     def _get_config(self):
         response = requests.get(f'http://{self.host}:{self.port}/config')
         if response.status_code == 200:
-            config = protocol.Config.deserialize(response.content)
+            config = protocol.Config.from_bson(bson.decode(response.content))
         else:
             raise ConnectionError(f'Unable to get server configuration:\n'
                                   f'Status:{response.status_code} Message:{response.reason}')
@@ -30,8 +30,8 @@ class Client:
     def _post_snapshot(self, snapshot, fields):
         response = requests.post(f'http://{self.host}:{self.port}/snapshot',
                                  headers={'Content-Type': 'application/bson'},
-                                 data=bson.encode({'user': self.user.serialize(),
-                                                   'snapshot': snapshot.serialize(fields=fields)}))
+                                 data=bson.encode({'user': self.user.to_bson(),
+                                                   'snapshot': snapshot.to_bson(fields=fields)}))
         if response.status_code != 200:
             raise ConnectionError(f'Unable to send snapshot to server:\n'
                                   f'Status:{response.status_code} Message:{response.reason}')

@@ -19,8 +19,9 @@ class Parser:
     def __call__(self, data):
         data = bson.decode(data)
         snapshot = data['snapshot']
-        parsed_data = self.parser(snapshot)
-        return bson.encode({'user': data['user'], 'data': parsed_data})
+        parsed_snapshot = {'timestamp_ms': snapshot['timestamp_ms'],
+                           self.field: self.parser(snapshot)}
+        return bson.encode({'user': data['user'], 'snapshot': parsed_snapshot})
 
     @staticmethod
     def register_parser(field):

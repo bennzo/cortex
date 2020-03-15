@@ -9,15 +9,12 @@ class Saver:
         # Connect to db
         db_module = importlib.import_module(name=f'..net.db.{scheme}',
                                             package='cortex.saver')
-        client = db_module.SaverClient(host, port)
-
-    def __del__(self):
-        pass
+        self.client = db_module.SaverClient(host, port)
 
     def save(self, field, data):
         data = bson.decode(data)
-        # save to db
-        pass
+        result = self.client.save(field, data)
+        return result
 
 
 def _cli_save(db_url, field, data_path):

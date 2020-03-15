@@ -8,7 +8,7 @@ def cli():
 
 
 @cli.command(name='save')
-@click.option('--database', '-h', default='monogodb://127.0.0.1:5432', show_default=True, help='Database IP address')
+@click.option('--database', '-h', default='monogodb://127.0.0.1:27017', show_default=True, help='Database IP address')
 @click.argument('field', required=True)
 @click.argument('data_path', required=True)
 def _save(database, field, data_path):

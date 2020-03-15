@@ -1,6 +1,7 @@
 # TODO: Add documentation on how to add support for message queues
 import pika
 import bson
+from ..protocol import Snapshot
 
 
 class SnapshotClient:
@@ -49,7 +50,7 @@ class ParserClient:
 
     def on_consume(self, channel, method, properties, body):
         parsed_data_encoded = self.parser(body)
-        print(f'consumed: {body}')
+        print(f'consumed: {body}')      # DEBUG
         channel.basic_publish(exchange='parsed_data',
                               routing_key=self.parser.field,
                               body=parsed_data_encoded)
@@ -64,19 +65,21 @@ class SaverClient:
         # Declare Parsed Data exchange
         self.channel.exchange_declare(exchange='parsed_data', exchange_type='direct')
         self.channel.queue_declare(queue='save')
-        self.channel.queue_bind(exchange='snapshots',
-                                queue='save',
-                                routing_key='#')
+
+        for field in Snapshot.fields.keys():
+            self.channel.queue_bind(exchange='parsed_data',
+                                    queue='save',
+                                    routing_key=field)
         self.channel.basic_consume(queue='save',
                                    on_message_callback=self.on_consume,
                                    auto_ack=True)
 
     def __del__(self):
-        pass
+        self.connection.close()
 
     def consume(self):
         self.channel.start_consuming()
 
     def on_consume(self, channel, method, properties, body):
-        print(f'consumed: {body}')
-        self.db_client.save(body)
+        print(f'consumed: {body}')      # DEBUG
+        self.db_client.save(field=method.routing_key, data=body)

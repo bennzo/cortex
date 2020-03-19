@@ -50,15 +50,20 @@ class Snapshot:
         self.feelings = feelings
 
     def to_bson(self, fields=None):
+        fields = fields or Snapshot.fields
         snapshot_doc = {'timestamp_ms': self.timestamp_ms}
-        for field in fields or Snapshot.fields:
-            snapshot_doc[field] = getattr(self, field).to_bson()
+        for fname in fields:
+            fval = getattr(self, fname)
+            if fval is not None:
+                snapshot_doc[fname] = fval.to_bson()
         return snapshot_doc
 
     @staticmethod
     def from_bson(data):
         snapshot_doc = data
         for fname, fclass in Snapshot.fields.items():
+            if fname not in snapshot_doc:
+                continue
             try:
                 snapshot_doc[fname] = fclass.from_bson(snapshot_doc[fname])
             except Exception as e:

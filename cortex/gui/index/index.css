@@ -1,0 +1,80 @@
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#container {
+  height: 800px;
+  border: #000000 1px solid;
+}
+
+#title {
+  padding: 0.5em;
+  background: #eee;
+}
+
+#topMenu {
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  grid-template-rows: 50px;
+  align-items: center;
+  background: #ccc;
+}
+
+#topMenu > div {
+  font-size: 15px;
+  height: 100%;
+  border: #000000 1px solid;
+  text-align: center;
+  vertical-align: center;
+  cursor: pointer;
+}
+
+#topMenu > div:hover {
+    background: #ddd;
+}
+
+#main {
+  float: bottom;
+  height: 100%;
+}
+
+ /* The side navigation menu */
+.sidenav {
+  float: left;
+  height: auto; /* 100% Full-height */
+  width: 0; /* 0 width - change this with JavaScript */
+  z-index: 1; /* Stay on top */
+  background-color: #111; /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 4px 4px 4px 4px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+  text-align: center;
+  vertical-align: center;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+  color: whitesmoke;
+  top: 0;
+  font-size: 10px;
+}
+
+.userNode {
+  color: whitesmoke;
+}
+
+.snapshotNode {
+  color: whitesmoke;
+}
+

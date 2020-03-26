@@ -6,7 +6,7 @@ from ..protocol import Snapshot
 
 class SnapshotClient:
     def __init__(self, host, port, **config):
-        self.fields = '.'.join(config['PARSERS'])
+        self.parsers = config['PARSERS']
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, port=port))
         self.channel = self.connection.channel()
 
@@ -18,8 +18,10 @@ class SnapshotClient:
 
     def publish(self, message):
         print('published')
+        # Intersect between the snapshot fields and the supported parsers
+        exist_supported_fields = message.keys() & self.parsers
         self.channel.basic_publish(exchange='snapshots',
-                                   routing_key=self.fields,
+                                   routing_key='.'.join(exist_supported_fields),
                                    body=message)
 
 

@@ -3,7 +3,8 @@ from .app import app
 from ..utils import parse_url
 
 
-_CONFIG = {'PARSERS': ['pose', 'image_color', 'image_depth', 'feelings'],
+# TODO: move configurations to external files
+_CONFIG = {'PARSERS': {'pose', 'image_color', 'image_depth', 'feelings'},
            'DATA_FOLDER': 'data/temp'}
 
 

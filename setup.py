@@ -8,7 +8,7 @@ setup(
     author_email='bennohay@gmail.com',
     url='https://github.com/bennzo/cortex',
     packages=find_packages(),
-    install_requires=['bson', 'Click', 'Flask', 'furl', 'numpy', 'Pillow',
+    install_requires=['bson', 'Click', 'Flask', 'furl', 'numpy', 'pika', 'Pillow',
                       'protobuf', 'pymongo', 'pytest', 'requests'],
-    python_requires='>=3.6'
+    python_requires='>=3.8'
 )

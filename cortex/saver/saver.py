@@ -19,7 +19,7 @@ class Saver:
 
 def _cli_save(db_url, field, data_path):
     saver = Saver(db_url)
-    with open(data_path) as fd:
+    with open(data_path, 'rb') as fd:
         raw_data = fd.read()
         saver.save(field, raw_data)
 

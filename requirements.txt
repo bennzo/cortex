@@ -11,6 +11,7 @@ importlib-metadata==0.23
 itsdangerous==1.1.0
 Jinja2==2.11.1
 MarkupSafe==1.1.1
+mongomock==3.19.0
 more-itertools==7.2.0
 numpy==1.18.1
 orderedmultidict==1.0.1
@@ -25,6 +26,7 @@ pyparsing==2.4.2
 pytest==5.2.2
 python-dateutil==2.8.1
 requests==2.22.0
+sentinels==1.0.0
 six==1.12.0
 urllib3==1.25.6
 wcwidth==0.1.7

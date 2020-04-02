@@ -11,7 +11,7 @@ class Client:
         self.host = host
         self.port = port
         self.reader = reader.Reader(sample, sample_format)
-        self.user = self.reader.user
+        self.user = self.reader.read_user()
 
     def run(self):
         server_config = self._get_config()
@@ -21,7 +21,7 @@ class Client:
     def _get_config(self):
         response = requests.get(f'http://{self.host}:{self.port}/config')
         if response.status_code == 200:
-            config = protocol.Config.from_bson(bson.decode(response.content))
+            config = protocol.Config.from_bson(bson.decode(response.data))
         else:
             raise ConnectionError(f'Unable to get server configuration:\n'
                                   f'Status:{response.status_code} Message:{response.reason}')
@@ -35,6 +35,7 @@ class Client:
         if response.status_code != 200:
             raise ConnectionError(f'Unable to send snapshot to server:\n'
                                   f'Status:{response.status_code} Message:{response.reason}')
+        return response.status_code
 
 
 def upload_sample(host, port, path):
@@ -44,3 +45,4 @@ def upload_sample(host, port, path):
     except IOError as e:
         print(f'ERROR: {e}')
         return 1
+    return 0

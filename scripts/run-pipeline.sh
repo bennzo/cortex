@@ -23,7 +23,22 @@ function build_docker() {
 function run_pipeline() {
   echo "Deploying full pipeline..."
   build_docker
-  echo "pipeline"
+
+  # Deploying database and message queue
+  deploy_db
+  deploy_mq
+
+  # Deploying parsers
+  for parser in "pose" "feelings" "image_color" "image_depth"; do
+    deploy_component "parsers" $parser
+  done
+
+  # Deploying rest of components
+  for comp in "saver" "server" "api" "gui"; do
+    deploy_component $comp
+  done
+
+  echo "Pipeline deployment finished successfully."
 }
 
 function deploy_db() {
@@ -43,7 +58,7 @@ function deploy_component() {
 
   case "$comp" in
 
-  "server" ) cmd="python -m cortex.server run-server -h '127.0.0.1' -p 8000 'rabbitmq://127.0.0.1:5672/'";;
+  "server" ) cmd="python -u -m cortex.server run-server -h '127.0.0.1' -p 8000 'rabbitmq://127.0.0.1:5672/'";;
   "parsers" ) cmd="python -m cortex.parsers run-parser ${subcomp} 'rabbitmq://127.0.0.1:5672/'"; subcomp="_${subcomp}";;
   "saver" ) cmd="python -m cortex.saver run-saver 'mongodb://127.0.0.1:27017' 'rabbitmq://127.0.0.1:5672/'";;
   "api" ) cmd="python -m cortex.api run-server -h '127.0.0.1' -p 5000 -d 'mongodb://127.0.0.1:27017'";;
@@ -54,12 +69,20 @@ function deploy_component() {
 
   cont_name=${DOCKER_PREFIX}_${comp}${subcomp}
   mount="type=bind,source="$(pwd)"/temp_data,target=/usr/cortex/temp_data"
-  dockerrun="docker run -d
+  dockerrun="docker run -dit
+                        --network host
+                        -e PYTHONUNBUFFERED=0
                         --mount ${mount}
                         --name ${cont_name}
                         advsysdsgn_beno_python_image
-                        /bin/bash -c ${cmd}"
-  eval dockerrun
+                        ${cmd}"
+  eval $dockerrun
+  echo $?
+#  if [ $ret -ne 0 ]; then
+#          echo "In If"
+#  else
+#          echo "In Else"
+#  fi
   echo ">> ${comp}${subcomp} set up and running! <<"
 }
 

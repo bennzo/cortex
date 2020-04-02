@@ -36,7 +36,6 @@ class Reader:
     def __init__(self, path, driver_type):
         self.path = Path(path)
         self.driver = Reader.drivers[driver_type](path)
-        self.user = self.read_user()
 
     def __iter__(self):
         return self
@@ -78,10 +77,17 @@ class DriverProtobuf:
     def __del__(self):
         self.fd.close()
 
+    def _read(self, n):
+        data = self.fd.read(n)
+        if data:
+            return data
+        else:
+            raise EOFError()
+
     def read_user(self):
-        msg_size, = struct.unpack(self.msg_size_format, self.fd.read(self.msg_size_length))
+        msg_size, = struct.unpack(self.msg_size_format, self._read(self.msg_size_length))
         user = cortex_pb2.User()
-        user.ParseFromString(self.fd.read(msg_size))
+        user.ParseFromString(self._read(msg_size))
 
         protocol_user = protocol.User(uid=user.user_id,
                                       name=user.username,
@@ -90,9 +96,9 @@ class DriverProtobuf:
         return protocol_user
 
     def read_snapshot(self):
-        msg_size, = struct.unpack(self.msg_size_format, self.fd.read(self.msg_size_length))
+        msg_size, = struct.unpack(self.msg_size_format, self._read(self.msg_size_length))
         snapshot = cortex_pb2.Snapshot()
-        snapshot.ParseFromString(self.fd.read(msg_size))
+        snapshot.ParseFromString(self._read(msg_size))
 
         pose = protocol.Pose(translation=(snapshot.pose.translation.x,
                                           snapshot.pose.translation.y,

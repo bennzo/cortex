@@ -35,7 +35,7 @@ def post_snapshot():
                 fd.write(snapshot['image_depth']['image_depth'])
             snapshot['image_depth']['image_depth'] = str(image_path)
 
-        app.config['PUBLISH_MESSAGE'](bson.encode(data))
+        app.config['PUBLISH_MESSAGE'](data)
     except Exception as e:
         print(e)
     return ''

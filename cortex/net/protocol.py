@@ -67,7 +67,7 @@ class Snapshot:
             try:
                 snapshot_doc[fname] = fclass.from_bson(snapshot_doc[fname])
             except Exception as e:
-                print(f'Error encoding field - <{fname}>:')
+                print(f'Error decoding field - <{fname}>:')
                 print(e)
         return Snapshot(**snapshot_doc)
 

@@ -77,7 +77,8 @@ def parse_feelings(data):
 
 def run_parser(field, data):
     parser = Parser(field)
-    return parser(data)
+    data_bytes = parser(data)
+    return data_bytes
 
 
 def setup_parser(field, message_queue):

@@ -9,3 +9,5 @@ install:
   - pip install sphinx
 script:
   - python -m pytest --cov-report=xml --cov=cortex tests/
+after_success:
+  - codecov

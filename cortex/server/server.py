@@ -22,10 +22,6 @@ class Server:
     def start(self, **kwargs):
         self.app.run(host=self.host, port=self.port, **kwargs)
 
-    def stop(self):
-        shutdown = request.environ.get('werkzeug.server.shutdown')
-        shutdown()
-
 
 def _cli_run_server(host, port, message_queue):
     # Import a message queue module according to the url scheme

@@ -18,7 +18,7 @@ def mock_mongo(monkeypatch):
 def test_saver(mock_mongo):
     saver = Saver(_DB_URL)
     for field in _RESULTS:
-        with open(f'tests/data/{field}.result', 'rb') as fd:
+        with open(f'data/{field}.result', 'rb') as fd:
             data = fd.read()
             saver.save(field, data)
 

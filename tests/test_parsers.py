@@ -5,7 +5,7 @@ import bson
 from cortex.parsers import run_parser
 
 
-_SNAPSHOT_RAW = "data/snapshot.raw"
+_SNAPSHOT_RAW = "tests/data/snapshot.raw"
 _USER = {'user': {'uid': 42, 'name': 'Dan Gittik', 'birthday': datetime.datetime(1992, 3, 5, 0, 0), 'gender': 'm'}}
 _POSE = {'snapshot': {'timestamp_ms': datetime.datetime(2019, 12, 4, 10, 8, 7, 339000),
                       'pose': {'translation': [0.4873843491077423,

@@ -8,7 +8,7 @@ from cortex.net.protocol import Snapshot, Config
 
 _HOST = '127.0.0.1'
 _PORT = 8000
-_SAMPLE = 'data/littlesample.mind.gz'
+_SAMPLE = 'tests/data/littlesample.mind.gz'
 _SAMPLE_FORMAT = 'protobuf'
 
 

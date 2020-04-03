@@ -1,13 +1,17 @@
 import struct
 import gzip
 import numpy as np
+import pytz
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 from PIL import Image
 
 from .utils import cortex_pb2
 from ..net import protocol
+
+
+_LOCAL_TZ = pytz.timezone('Israel')
 
 
 class Reader:
@@ -89,9 +93,13 @@ class DriverProtobuf:
         user = cortex_pb2.User()
         user.ParseFromString(self._read(msg_size))
 
+        birthday = datetime.utcfromtimestamp(user.birthday)\
+            .replace(tzinfo=pytz.utc)\
+            .astimezone(_LOCAL_TZ)\
+            .replace(tzinfo=None)
         protocol_user = protocol.User(uid=user.user_id,
                                       name=user.username,
-                                      birthday=datetime.fromtimestamp(user.birthday),
+                                      birthday=birthday,
                                       gender=self.gender_enum[user.gender])
         return protocol_user
 
@@ -128,7 +136,11 @@ class DriverProtobuf:
                                      exhaustion=snapshot.feelings.exhaustion,
                                      happiness=snapshot.feelings.happiness)
 
-        protocol_snapshot = protocol.Snapshot(datetime.fromtimestamp(snapshot.datetime/1000),
+        timestamp_ms = datetime.utcfromtimestamp(snapshot.datetime/1000)\
+            .replace(tzinfo=pytz.utc)\
+            .astimezone(_LOCAL_TZ)\
+            .replace(tzinfo=None)
+        protocol_snapshot = protocol.Snapshot(timestamp_ms,
                                               pose,
                                               image_color,
                                               image_depth,

@@ -46,7 +46,7 @@ def parse_image_color(data):
     else:
         with raw_path.open(mode='rb') as fd:
             raw_img = fd.read()
-            img_path = str(raw_path.parent / raw_path.stem) + '.tiff'
+            img_path = str(raw_path.parent / raw_path.stem) + '.png'
             img = Image.frombytes('RGB', (w, h), raw_img)
             img.save(img_path)
             data['image_color'] = img_path

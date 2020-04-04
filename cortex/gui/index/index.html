@@ -3,43 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css", rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="index.js"></script>
 </head>
 <body>
-    <div id="container">
-        <div id="title">
-            <h2>Cortex</h2>
+<!--    <div id="container">-->
+
+    <div id="title">
+        <h1>Cortex</h1>
+    </div>
+
+    <div id="topMenu">
+        <a id="usersBtn">Users</a>
+    </div>
+
+    <div id="main">
+        <div id="userNav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn"><<</a>
         </div>
-        <div id="topMenu">
-            <div id="usersBtn">Users</div>
+        <div id="snapshotNav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn"><<</a>
         </div>
-        <div id="main">
-            <div id="usersMenu" class="sidenav">
-                <a href="javascript:void(0)" class="closebtn"><<</a>
-                <ul id="userList">
-                </ul>
-            </div>
-            <div id="snapshotMenu" class="sidenav">
-                <a href="javascript:void(0)" class="closebtn"><<</a>
-                <ul id="snapshotList">
-                </ul>
-            </div>
-            <div id="snapshot">
-                <div id="snapshotStatus">
-                    <div id="snapshotUser">
-                        <div id="userName"></div>
-                        <div id="userDob"></div>
-                        <div id="userGender"></div>
-                        <div id="userDob"></div>
-                    </div>
-                    <div id="snapshotFeelingsj"></div>
-                    <div id="snapshotPose"></div>
+
+        <div id="snapshot">
+            <div id="snapshotStatus">
+                <div id="user">
+                    <div id="name"><i></i>Name: N/A</div>
+                    <div id="birthday"><i class="fas fa-birthday-cake"></i></div>
+                    <div id="gender">Gender: N/A</div>
                 </div>
-                <div id="snapshotImage"></div>
+                <div id="feelings">
+                    <div id="hunger" title="Hunger"><i class="fas fa-drumstick-bite"></i></div>
+                    <div id="thirst" title="Thirst"><i class="fas fa-wine-glass-alt"></i></div>
+                    <div id="exhaustion" title="Exhaustion"><i class="fas fa-bed"></i></div>
+                    <div id="happiness" title="Happiness"><i class="far fa-smile"></i></div>
+                </div>
+                <div id="pose">
+                    <div id="translation_x">X: N/A</div>
+                    <div id="translation_y">Y: N/A</div>
+                    <div id="translation_z">Z: N/A</div>
+                    <div id="rotation_x">Rot X: N/A</div>
+                    <div id="rotation_y">Rot Y: N/A</div>
+                    <div id="rotation_z">Rot Z: N/A</div>
+                    <div id="rotation_w">Rot W: N/A</div>
+                </div>
+            </div>
+
+            <div id="snapshotImage">
+
             </div>
         </div>
     </div>
+
+<!--    </div>-->
 </body>
 </html>

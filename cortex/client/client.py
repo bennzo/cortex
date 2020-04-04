@@ -20,8 +20,12 @@ class Client:
 
     def _get_config(self):
         response = requests.get(f'http://{self.host}:{self.port}/config')
+        if hasattr(response, 'content'):
+            content = response.content
+        else:
+            content = response.data
         if response.status_code == 200:
-            config = protocol.Config.from_bson(bson.decode(response.data))
+            config = protocol.Config.from_bson(bson.decode(content))
         else:
             raise ConnectionError(f'Unable to get server configuration:\n'
                                   f'Status:{response.status_code} Message:{response.reason}')

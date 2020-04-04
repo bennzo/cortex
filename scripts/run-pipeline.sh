@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 DOCKER_PREFIX="advsysdsgn_beno"
 PYTHON_IMAGE="${DOCKER_PREFIX}_python_image"
@@ -68,7 +69,7 @@ function deploy_component() {
   esac
 
   cont_name=${DOCKER_PREFIX}_${comp}${subcomp}
-  mount="type=bind,source="$(pwd)"/temp_data,target=/usr/cortex/temp_data"
+  mount="type=bind,source="$(pwd)"/data,target=/usr/cortex/data"
   dockerrun="docker run -dit
                         --network host
                         -e PYTHONUNBUFFERED=0

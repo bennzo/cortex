@@ -17,14 +17,17 @@ def get_users():
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = app.config['DB_CLIENT'].get_user(user_id)
-    # if isinstance(user['birthday'], datetime.datetime):
-    #     user['birthday'] = datetime.datetime.strftime('%Y-%m-%d_%H-%M-%S-%f')
+    if isinstance(user['birthday'], datetime.datetime):
+        user['birthday'] = user['birthday'].strftime('%Y/%m/%d')
     return jsonify(user)
 
 
 @app.route('/users/<int:user_id>/snapshots', methods=['GET'])
 def get_user_snapshots(user_id):
     snapshot_list = app.config['DB_CLIENT'].get_user_snapshots(user_id)
+    for snap in snapshot_list:
+        if isinstance(snap['datetime'], datetime.datetime):
+            snap['datetime'] = snap['datetime'].strftime('%Y/%m/%d %H:%M:%S:%f')
     return jsonify(snapshot_list)
 
 

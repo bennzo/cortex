@@ -15,31 +15,32 @@ _LOCAL_TZ = pytz.timezone('Israel')
 
 
 class Reader:
-    '''
-    Mind sample reader class.
+    """A Reader for sample files.
 
     Initialized by a path to a mind sample file and parses the user information and snapshots it contains
-    according to the file extension (assuming that an appropriate parser for the extension exists).
+    according to the file extension (assuming an appropriate parser for the extension exists).
 
-    Extending the Reader's parsing capability:
+    Extending the Reader's parsing capability:\n
     In order for the Reader to support new sample formats a new Driver class needs to be implemented
     and match the following requirements:
-        Initialization:
-            - Initialized by the path to the mind sample file
-                i.e 'def __init__(self, path):'
-        Registration:
-            - Decorated by Reader.register_driver initialized with the appropriate extension
-                i.e. @Reader.register_driver('.mind')
-        Interface:
-            - read_user(): Reads the user information and returns a User instance as defined in '../net/protocol.py'
-            - read_snapshot(): Reads a snapshot and returns a Snapshot instance as defined in '../net/protocol.py'
-    '''
+        Initialization
+            - Initialized by the path to the mind sample file.
+        Registration
+            - Decorated by :meth:`register_driver` initialized with the appropriate extension.
+        Interface
+            - read_user(): Reads the user information and returns a :class:`cortex.net.protocol.User` instance.
+            - read_snapshot(): Reads a snapshot and returns a :class:`cortex.net.protocol.Snapshot` instance.
 
-    drivers = {}
+    Args:
+        path (str): Path to the sample file
+        driver_type (str): Identifier for the appropriate format parser
+    """
+
+    _DRIVERS = {}
 
     def __init__(self, path, driver_type):
         self.path = Path(path)
-        self.driver = Reader.drivers[driver_type](path)
+        self.driver = Reader._DRIVERS[driver_type](path)
 
     def __iter__(self):
         return self
@@ -53,17 +54,27 @@ class Reader:
     @staticmethod
     def register_driver(name):
         def decorator(driver):
-            Reader.drivers[name] = driver
+            Reader._DRIVERS[name] = driver
             return driver
         return decorator
 
     def read_user(self):
+        """ Reads a user from the sample file.
+
+        Returns:
+            user (:class:`cortex.net.protocol.User`)
+        """
         user = self.driver.read_user()
         if not isinstance(user, protocol.User):
             raise TypeError('Unsupported User class')
         return user
 
     def read_snapshot(self):
+        """ Reads a snapshot from the sample file.
+
+        Returns:
+            user (:class:`cortex.net.protocol.Snapshot`)
+        """
         ss = self.driver.read_snapshot()
         if not isinstance(ss, protocol.Snapshot):
             raise TypeError('Unsupported Snapshot class')

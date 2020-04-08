@@ -36,12 +36,15 @@ function openSnapshot(event) {
         .then(response => response.json())
         .then(function(user) {
             // Fill the user information
-            $('#user #name').text(user['name'])
-            $('#user #name i').addClass((user['gender'] == 'm' ? 'fas fa-male' : 'fas fa-female'))
-            // $('#user').children().each(function() {
-            //     let currentText = $(this).text()
-            //     $(this).text(currentText.replace("N/A", user[$(this).attr('id')]))
-            // })
+            $('#user #name .value').text(user["name"])
+            if (user['gender'] == 'm') {
+                $('#user #name i').removeClass("fa-female")
+                $('#user #name i').addClass("fa-male")
+            } else {
+                $('#user #name i').removeClass("fa-male")
+                $('#user #name i').addClass("fa-female")
+            }
+            $('#user #birthday .value').text(user['birthday'])
         });
 
     fetch(`http://${api_host}:${api_port}/users/${event.data.uid}/snapshots/${event.data.sid}`)
@@ -51,6 +54,7 @@ function openSnapshot(event) {
                 fillSnapshotResult(event.data.uid, event.data.sid, field)
             });
         });
+    $('#snapshot').css('visibility', 'visible')
 }
 
 function fillSnapshotResult(uid, sid, field) {
@@ -61,7 +65,10 @@ function fillSnapshotResult(uid, sid, field) {
                 case 'pose':
                     break;
                 case 'feelings':
-                    break;
+                    $('#feelings #hunger .value').text(result['hunger'].toFixed(3))
+                    $('#feelings #thirst .value').text(result['thirst'].toFixed(3))
+                    $('#feelings #exhaustion .value').text(result['exhaustion'].toFixed(3))
+                    $('#feelings #happiness .value').text(result['happiness'].toFixed(3))
                 case 'image_color':
                     $('#snapshot').css('background-image', 'url(' + result[field] + ')')
                     break;

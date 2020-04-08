@@ -16,7 +16,7 @@ _POSE = {'snapshot': {'timestamp_ms': datetime.datetime(2019, 12, 4, 10, 8, 7, 3
                                             -0.021271118915446748,
                                             0.9571326384559261]}}}
 _IMAGE_COLOR = {'snapshot': {'timestamp_ms': datetime.datetime(2019, 12, 4, 10, 8, 7, 339000),
-                             'image_color': {'image_color': 'data/temp/42/2019-12-04_10-08-07-339000/image_color.tiff',
+                             'image_color': {'image_color': 'data/temp/42/2019-12-04_10-08-07-339000/image_color.png',
                                              'width': 1920, 'height': 1080}}}
 _IMAGE_DEPTH = {'snapshot': {'timestamp_ms': datetime.datetime(2019, 12, 4, 10, 8, 7, 339000),
                              'image_depth': {'image_depth': 'data/temp/42/2019-12-04_10-08-07-339000/image_depth.tiff',

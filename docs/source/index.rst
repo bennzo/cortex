@@ -8,11 +8,7 @@ Welcome to The Magnificent Brain's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
-   usage/installation
-   usage/quickstart
-   
-   api
+   :caption: Getting Started:
 
 
 

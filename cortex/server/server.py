@@ -1,15 +1,31 @@
 import importlib
-from flask import request
-# from .app import app
 from ..utils import parse_url
 
 
-# TODO: move configurations to external files
 _CONFIG = {'PARSERS': ['pose', 'image_color', 'image_depth', 'feelings'],
            'DATA_FOLDER': 'data/temp'}
 
 
 class Server:
+    """ A Simple server that recieves messages and publishes them using a publish function.
+
+
+    Attributes:
+        host (str): Hostname of the server
+        port (int): Port of the server
+        publish (function): Publish function, takes a message and publishes it
+
+    Args:
+        host (str): Hostname of the server
+        port (int): Port of the server
+        publish (function): Publish function, takes a message and publishes it
+
+    Routes:
+        GET:
+            - /config: Returns the server supported parsers
+        POST:
+            - /snapshot: Recieves a message and publishes it
+    """
     def __init__(self, host, port, publish):
         self.host = host
         self.port = port
@@ -20,6 +36,11 @@ class Server:
         self.app.config.update(PUBLISH_MESSAGE=publish)
 
     def start(self, **kwargs):
+        """Runs the server.
+
+        Args:
+            **kwargs: Any keyword arguments that Flask.app.run() might take.
+        """
         self.app.run(host=self.host, port=self.port, **kwargs)
 
 
@@ -33,6 +54,16 @@ def _cli_run_server(host, port, message_queue):
 
 
 def run_server(host, port, publish, threaded=True):
+    """Initiates and runs a server.
+
+    The server will run on the host:port given and publish each message recieved using the publish function passed.
+
+    Args:
+        host (str): Hostname of the server
+        port (int): Port of the server
+        publish (function): Publish function, takes a message and publishes it
+        threaded (bool, optional): Flag for multi-thread use
+    """
     server = Server(host, port, publish)
     server.start(threaded=threaded)
     # app.run(host=host, port=port, debug=False, use_debugger=False, use_reloader=False, passthrough_errors=True)

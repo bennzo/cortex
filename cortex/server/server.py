@@ -11,14 +11,14 @@ class Server:
 
 
     Attributes:
-        host (str): Hostname of the server
-        port (int): Port of the server
+        host (:obj:`str`): Hostname of the server
+        port (:obj:`int`): Port of the server
         publish (function): Publish function, takes a message and publishes it
 
     Args:
-        host (str): Hostname of the server
-        port (int): Port of the server
-        publish (function): Publish function, takes a message and publishes it
+        host (:obj:`str`): Hostname of the server
+        port (:obj:`int`): Port of the server
+        publish (:obj:`function`): Publish function, takes a message and publishes it
 
     Routes:
         GET:
@@ -59,10 +59,10 @@ def run_server(host, port, publish, threaded=True):
     The server will run on the host:port given and publish each message recieved using the publish function passed.
 
     Args:
-        host (str): Hostname of the server
-        port (int): Port of the server
-        publish (function): Publish function, takes a message and publishes it
-        threaded (bool, optional): Flag for multi-thread use
+        host (:obj:`str`): Hostname of the server
+        port (:obj:`int`): Port of the server
+        publish (:obj:`function`): Publish function, takes a message and publishes it
+        threaded (:obj:`bool`, optional): Flag for multi-thread use
     """
     server = Server(host, port, publish)
     server.start(threaded=threaded)

@@ -9,15 +9,16 @@ class Parser:
     """Generic parser class for snapshot parsing.
 
     Initialized by a snapshot field name. By calling the instance with data, the call will return
-    the parsed data coupled with the user information in a dictionary, 'bsonly' encoded.
+    the parsed data coupled with the user information in a dictionary, 'BSONly' encoded.
 
-    Extending the Parsers's parsing capability:\n
-    In order for the Parser to support new snapshot fields, a new parsing function needs to be implemented
-    and match the following requirements:
-        Registration
-            - Decorated by :meth:`Parser.register_parser` initialized with the appropriate field name.
-        Interface
-            - Recieves a :class:`cortex.net.protocol.Snapshot` in a form of dictionary and parses the appropriate field.
+    Note:
+        Extending the Parsers's parsing capability:\n
+        In order for the Parser to support new snapshot fields, a new parsing function needs to be implemented
+        and match the following requirements:
+            Registration
+                - Decorated by :meth:`Parser.register_parser` initialized with the appropriate field name.
+            Interface
+                - Recieves a :class:`cortex.net.protocol.Snapshot` in a form of dictionary and parses the appropriate field.
 
     Args:
         field (str): The snapshot field name to be parsed

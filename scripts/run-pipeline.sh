@@ -29,6 +29,9 @@ function run_pipeline() {
   deploy_db
   deploy_mq
 
+  echo "Waiting 10 seconds before deploying other components"
+  sleep 10
+
   # Deploying parsers
   for parser in "pose" "feelings" "image_color" "image_depth"; do
     deploy_component "parsers" $parser
@@ -54,6 +57,7 @@ function deploy_mq() {
 
 
 function deploy_component() {
+  build_docker
   comp=$1
   subcomp=$2
 
@@ -77,13 +81,9 @@ function deploy_component() {
                         --name ${cont_name}
                         advsysdsgn_beno_python_image
                         ${cmd}"
+  echo $dockerrun
   eval $dockerrun
   echo $?
-#  if [ $ret -ne 0 ]; then
-#          echo "In If"
-#  else
-#          echo "In Else"
-#  fi
   echo ">> ${comp}${subcomp} set up and running! <<"
 }
 
@@ -124,10 +124,18 @@ function component_menu() {
   done
 }
 
+function clean_containers() {
+  docker ps --filter name=advsysdsgn_beno -aq | xargs docker stop | xargs docker rm
+}
+
+function clean_image() {
+  docker image rm --force advsysdsgn_beno_python_image:latest
+}
+
 function main_menu() {
   title="Hello Madame/Sir, how would you like to set up the hivemind?"
   prompt="Pick an option:"
-  options=("Run Full Pipeline" "Run Single Component")
+  options=("Run Full Pipeline" "Run Single Component" "Clean all docker containers" "Remove python docker image")
 
   echo "$title"
   PS3="$prompt "
@@ -137,6 +145,8 @@ function main_menu() {
 
       1 ) run_pipeline; break;;
       2 ) component_menu; break;;
+      3 ) clean_containers; break;;
+      4 ) clean_image; break;;
 
       $(( ${#options[@]}+1 )) ) echo "Goodbye!"; break;;
       *) echo "Invalid option. Try another one."; continue;;

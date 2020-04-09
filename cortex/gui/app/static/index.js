@@ -1,6 +1,3 @@
-var api_host = '127.0.0.1';
-var api_port = '5000';
-
 function openUserNav() {
     $(".userNode").remove()
     fetch(`http://${api_host}:${api_port}/users`)

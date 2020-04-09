@@ -4,6 +4,17 @@ from ..utils import parse_url
 
 
 class Saver:
+    """ Saver class, saves data to the configured database
+
+    Initialized by a database url in the format <mq_name>://<host>:<port>.
+    The saver client is dynamically imported from the :mod:`cortex.net.db` module and
+    has to be implemented in the appropriate sub-module.
+    for example: passing 'mongodb://127.0.0.1:27017' as db_url, a SaverClient
+    will be imported from :mod:`cortex.net.db.mongodb` and instantiated.
+
+    Args:
+        db_url (:obj:`str`): Database URL in the format <db_name>://<host>:<port>
+    """
     def __init__(self, db_url):
         scheme, host, port = parse_url(db_url)
         # Connect to db
@@ -12,6 +23,12 @@ class Saver:
         self.client = db_module.SaverClient(host, port)
 
     def save(self, field, data):
+        """Saves data (user info, snapshots) to the appropriate field
+
+        Args:
+            field (:obj:`str`): Field name the data is related to
+            data (:obj:`str`): BSON string of the data
+        """
         data = bson.decode(data)
         result = self.client.save(field, data)
         return result

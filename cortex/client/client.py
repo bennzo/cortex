@@ -13,8 +13,8 @@ class Client:
     Attributes:
         host (str): Hostname of the server
         port (int): Port of the server
-        reader (:obj:`cortex.client.reader.Reader`): Sample reader
-        user (:obj:`cortex.net.protocol.User`): Protocol User instance (holds the user information)
+        reader (:class:`cortex.client.reader.Reader`): Sample reader
+        user (:class:`cortex.net.protocol.User`): Protocol User instance (holds the user information)
 
     Args:
         host (str): Hostname of the server

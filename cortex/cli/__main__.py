@@ -10,7 +10,6 @@ def cli():
     pass
 
 
-# TODO: add type to all optional cli inputs
 @cli.command(name='get-users')
 @click.option('--host', '-h', type=str, default='127.0.0.1', show_default=True, callback=strip_str,
               help='API Server IP address')

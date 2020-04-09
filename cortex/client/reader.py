@@ -20,20 +20,21 @@ class Reader:
     Initialized by a path to a mind sample file and parses the user information and snapshots it contains
     according to the file extension (assuming an appropriate parser for the extension exists).
 
-    Extending the Reader's parsing capability:\n
-    In order for the Reader to support new sample formats a new Driver class needs to be implemented
-    and match the following requirements:
-        Initialization
-            - Initialized by the path to the mind sample file.
-        Registration
-            - Decorated by :meth:`register_driver` initialized with the appropriate extension.
-        Interface
-            - read_user(): Reads the user information and returns a :class:`cortex.net.protocol.User` instance.
-            - read_snapshot(): Reads a snapshot and returns a :class:`cortex.net.protocol.Snapshot` instance.
+    Note:
+        Extending the Reader's parsing capability:\n
+        In order for the Reader to support new sample formats a new Driver class needs to be implemented
+        and match the following requirements:
+            Initialization
+                - Initialized by the path to the mind sample file.
+            Registration
+                - Decorated by :meth:`register_driver` initialized with the appropriate extension.
+            Interface
+                - read_user(): Reads the user information and returns a :class:`cortex.net.protocol.User` instance.
+                - read_snapshot(): Reads a snapshot and returns a :class:`cortex.net.protocol.Snapshot` instance.
 
     Args:
-        path (str): Path to the sample file
-        driver_type (str): Identifier for the appropriate format parser
+        path (:obj:`str`): Path to the sample file
+        driver_type (:obj:`str`): Identifier for the appropriate format parser
     """
 
     _DRIVERS = {}
@@ -53,6 +54,11 @@ class Reader:
 
     @staticmethod
     def register_driver(name):
+        """A Decorator for registering driver classes.
+
+        Args:
+            name (:obj:`str`): The name of the registered driver
+        """
         def decorator(driver):
             Reader._DRIVERS[name] = driver
             return driver
@@ -83,6 +89,13 @@ class Reader:
 
 @Reader.register_driver('protobuf')
 class DriverProtobuf:
+    """Protobuf format reader
+
+    A Driver for the :class:`Reader` class which supports the protobuf format gzipped.
+
+    Args:
+        path (:obj:`str`): Path to the gzip file
+    """
     def __init__(self, path):
         self.fd = gzip.open(path, 'rb')
         self.msg_size_format = '<L'
@@ -100,6 +113,11 @@ class DriverProtobuf:
             raise EOFError()
 
     def read_user(self):
+        """Reads user information from the file
+
+        Returns:
+            protocol_user (:class:`cortex.net.protocol.User`)
+        """
         msg_size, = struct.unpack(self.msg_size_format, self._read(self.msg_size_length))
         user = cortex_pb2.User()
         user.ParseFromString(self._read(msg_size))
@@ -115,6 +133,11 @@ class DriverProtobuf:
         return protocol_user
 
     def read_snapshot(self):
+        """Reads a single snapshot from the file
+
+        Returns:
+            protocol_snapshot (:class:`cortex.net.protocol.Snapshot`)
+        """
         msg_size, = struct.unpack(self.msg_size_format, self._read(self.msg_size_length))
         snapshot = cortex_pb2.Snapshot()
         snapshot.ParseFromString(self._read(msg_size))

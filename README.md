@@ -7,7 +7,7 @@ a client and a server.
 
 
 **Documentation**  
-For a detailed documentation of the package API follow this [link](https://www.example.com) to a ReadTheDocs page.
+For a detailed documentation of the package API follow this [link](https://magnificent-brain.readthedocs.io/en/latest/) to a ReadTheDocs page.
 
 **Credit:**  
 This project is the final assignment in the Advanced System Design (2019) course in Tel-Aviv University instructed by [Dan Gittik](https://github.com/dan-gittik).

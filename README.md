@@ -5,6 +5,10 @@
 The Magnificent Brain is a simple infrastructure project that enables streaming of cognition snapshots between
 a client and a server.
 
+
+**Documentation**  
+For a detailed documentation of the package API follow this [link](https://www.example.com) to a ReadTheDocs page.
+
 **Credit:**  
 This project is the final assignment in the Advanced System Design (2019) course in Tel-Aviv University instructed by [Dan Gittik](https://github.com/dan-gittik).
 
@@ -302,8 +306,5 @@ The package can be utilized as a library by using the exposed API of each module
 * Run the `run-pipeline.sh` script:
     * Deploy the full pipeline
     * Deploy a specific component individually
-
-## Documentation
-For a detailed documentation of the package API follow this [link](https://www.example.com) to a ReadTheDocs page.
 
 

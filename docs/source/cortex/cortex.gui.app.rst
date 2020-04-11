@@ -1,10 +1,10 @@
-cortex.cli package
-==================
+cortex.gui.app package
+======================
 
 Module contents
 ---------------
 
-.. automodule:: cortex.cli
+.. automodule:: cortex.gui.app
    :members:
    :undoc-members:
    :show-inheritance:

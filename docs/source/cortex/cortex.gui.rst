@@ -1,5 +1,5 @@
-cortex package
-==============
+cortex.gui package
+==================
 
 Subpackages
 -----------
@@ -7,20 +7,15 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   cortex.api
-   cortex.client
-   cortex.net
-   cortex.parsers
-   cortex.saver
-   cortex.server
+   cortex.gui.app
 
 Submodules
 ----------
 
-cortex.utils module
--------------------
+cortex.gui.gui module
+---------------------
 
-.. automodule:: cortex.utils
+.. automodule:: cortex.gui.gui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -29,7 +24,7 @@ cortex.utils module
 Module contents
 ---------------
 
-.. automodule:: cortex
+.. automodule:: cortex.gui
    :members:
    :undoc-members:
    :show-inheritance:

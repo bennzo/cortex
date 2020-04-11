@@ -9,12 +9,12 @@ a client and a server.
 This project is the final assignment in the Advanced System Design (2019) course in Tel-Aviv University instructed by [Dan Gittik](https://github.com/dan-gittik).
 
 ## Getting Started
-#### Requirements:
+### Requirements:
 * Unix-like OS (this project was built and tested on Ubuntu 18.04.4)
 * Python >= 3.8, with virtualenv installed
 * Docker (for container deployment and pipeline script)
 
-#### Quickstart:
+### Quickstart:
 1. Clone the repository, run the included script and follow the instructions to get the pipeline running:
     ```bash
     git clone https://github.com/bennzo/cortex.git
@@ -32,7 +32,7 @@ This project is the final assignment in the Advanced System Design (2019) course
     ```
 4. Open up http://127.0.0.1:8080 to browse your uploaded snapshots.
 
-#### Install:
+### Install:
 
 **Note:**
 * If you are using a clean OS installation, we recommend the following preliminery steps:
@@ -65,18 +65,18 @@ This project is the final assignment in the Advanced System Design (2019) course
     pytest
     ```
 
-#### Docker deployment:
+### Docker deployment:
 If you wish to deploy the project components individually inside containers:
 * Install Docker
 * Build the Docker image
 * Run the run-pipeline.sh script and follow the instructions
 
 ## Usage
-#### CLI:
+### CLI:
 The package includes a CLI which allows execution of the basic functionality of each module.
 <details><summary><b>Show instructions</b></summary>
 
-##### Client:
+#### Client:
 * ``upload-sample --host <server_host> --port <server_port> <path_to_sample>``  
 
     Uploads a sample to a server.  
@@ -89,7 +89,7 @@ The package includes a CLI which allows execution of the basic functionality of 
           'littlesample.mind.gz'
     ```
 
-##### Server:
+#### Server:
 * ``run-server --host <server_host> --port <server_port> <mq_url>``  
 
     Runs a server which listens on host:port and publishes messages received to a message queue.
@@ -102,7 +102,7 @@ The package includes a CLI which allows execution of the basic functionality of 
           'rabbitmq://127.0.0.1:5672/'
     ```
 
-##### Parsers:
+#### Parsers:
 * ``parse <parser_name> <path_to_data>``  
 
     Run a specific parser on raw data and return the parsed result (optionally redirect the output to a file).
@@ -122,7 +122,7 @@ The package includes a CLI which allows execution of the basic functionality of 
     python -m cortex.parsers run-parser 'pose' 'rabbitmq://127.0.0.1:5672/'
     ```
     
-##### Saver:
+#### Saver:
 * ``save --database <db_url> <field_name> <field_result_path>``  
 
     Takes a field name and a path to a field result and saves it to a database in the URL given.
@@ -147,7 +147,7 @@ The package includes a CLI which allows execution of the basic functionality of 
           'rabbitmq://127.0.0.1:5672/'
     ```
 
-##### API:
+#### API:
 * ``run-server --host <server_host> --port <server_port> --database <db_url>``  
 
     Runs an API server which listens on host:port and serves data from db_url.  
@@ -161,7 +161,7 @@ The package includes a CLI which allows execution of the basic functionality of 
           --database 'mongodb://127.0.0.1:27017''
     ```
 
-##### CLI:
+#### CLI:
 The CLI consumes an API server and reflects it
 
 * ``get-users``  
@@ -205,7 +205,7 @@ The CLI consumes an API server and reflects it
     python -m cortex.cli get-result 42 1 'pose'
     ```
   
-##### GUI:
+#### GUI:
 * ``run-server --host <server_host> --port <server_port> --api-host <api_host> --api-port <api_port>``  
 
     Runs the GUI web server on host:port which reflects the API on api_host:api_port.
@@ -221,11 +221,11 @@ The CLI consumes an API server and reflects it
 
 </details>
 
-#### Library:
+### Library:
 The package can be utilized as a library by using the exposed API of each module.
 <details><summary><b>Show instructions</b></summary>
 
-##### Client:
+#### Client:
 * ``upload_sample(host=<server_host>, port=<server_port>, path=<path_to_sample>)``  
 
     Uploads a sample to a server.
@@ -236,7 +236,7 @@ The package can be utilized as a library by using the exposed API of each module
     upload_sample(host='127.0.0.1', port=8000, path='sample.mind.gz')
     ```
 
-##### Server:
+#### Server:
 * ``run_server(host=<server_host>, port=<server_port>, publish=<publish_func>)``  
 
     Runs a server which listens on host:port and passes messages received to a publish function.
@@ -249,7 +249,7 @@ The package can be utilized as a library by using the exposed API of each module
     run_server(host='127.0.0.1', port=8000, publish=print_message)
     ```
   
-##### Parsers:
+#### Parsers:
 * ``run_parser(field=<parser_name>, data=data)``  
 
     Run a specific parser on raw data and return the parsed result.
@@ -257,11 +257,11 @@ The package can be utilized as a library by using the exposed API of each module
     Example:
     ```python
     from cortex.parsers import run_parser
-    data = ''
+    data = '...'
     result = run_parser('pose', data)
     ```
   
-##### Saver:
+#### Saver:
 * ``Saver(db_url)``  
 
     Saver class which connects to a database and saves data by calling its `save` method.
@@ -270,11 +270,11 @@ The package can be utilized as a library by using the exposed API of each module
     ```python
     from cortex.saver import Saver
     saver = Saver(db_url=db_url)
-    data = '' 
+    data = '...' 
     saver.save('pose', data)    
     ```
   
-##### API:
+#### API:
 * ``run_api_server(host=<server_host>, port=<server_port>, database_url=<db_url>)``  
 
     Runs an API server which listens on host:port and serves data from db_url.  
@@ -286,7 +286,7 @@ The package can be utilized as a library by using the exposed API of each module
     run_api_server(host='127.0.0.1', port=5000, database_url='mongodb://127.0.0.1:27017')
     ```
   
-##### GUI:
+#### GUI:
 * ``run_server(host=<server_host>, port=<server_port>, api_host=<api_host>, api_port=<api_port>``  
 
     Runs the GUI web server on host:port which reflects the API on api_host:api_port.
@@ -298,7 +298,7 @@ The package can be utilized as a library by using the exposed API of each module
     ```
 </details>
 
-#### Pipeline script:
+### Pipeline script:
 * Run the `run-pipeline.sh` script:
     * Deploy the full pipeline
     * Deploy a specific component individually

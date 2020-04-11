@@ -9,6 +9,6 @@ setup(
     url='https://github.com/bennzo/cortex',
     packages=find_packages(),
     install_requires=['bson', 'Click', 'Flask', 'furl', 'numpy', 'pika', 'Pillow',
-                      'protobuf', 'pymongo', 'pytest', 'requests', 'mongomock', 'pytz'],
+                      'protobuf', 'pymongo', 'pytest', 'requests', 'mongomock', 'pytz', 'Sphinx'],
     python_requires='>=3.8'
 )

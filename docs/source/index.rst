@@ -3,9 +3,26 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-The Magnificent Brain's documentation
-=====================================
-Magnificent Brain is a simple infrastructure project that enables streaming of cognition snapshots between
+.. role:: raw-html-m2r(raw)
+   :format: html
+
+
+
+.. image:: https://travis-ci.org/bennzo/cortex.svg?branch=master
+   :target: https://travis-ci.org/bennzo/cortex
+   :alt: Build Status
+
+
+.. image:: https://codecov.io/gh/bennzo/cortex/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/bennzo/cortex
+   :alt: codecov
+|
+
+
+Magnificent Brain
+=================
+
+The Magnificent Brain is a simple infrastructure project that enables streaming of cognition snapshots between
 a client and a server.
 
 .. toctree::

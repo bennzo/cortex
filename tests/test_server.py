@@ -16,6 +16,7 @@ _SNAPSHOT_2 = {'user': {'uid': 42, 'name': 'Dan Gittik', 'birthday': datetime.da
 
 @pytest.fixture
 def server():
+    Server._CONFIG['DATA_FOLDER'] = 'data/temp'
     ser = Server(host=_HOST, port=_PORT, publish=print)
     ser.app.config['TESTING'] = True
     with ser.app.test_client() as client:

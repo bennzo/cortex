@@ -15,7 +15,6 @@ class SnapshotClient:
     """
     def __init__(self, host, port, **config):
         self.parsers = config['PARSERS']
-        # TODO: Error connecting to message queue
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, port=port, heartbeat=0))
         self.channel = self.connection.channel()
 
@@ -32,7 +31,7 @@ class SnapshotClient:
             message (:obj:`str`): Message to publish
         """
         # TODO: remove print
-        print('published')
+        # print('published')
         # Intersect between the snapshot fields and the supported parsers
         exist_supported_fields = message['snapshot'].keys() & set(self.parsers)
         self.channel.basic_publish(exchange='snapshots',
@@ -82,8 +81,9 @@ class ParserClient:
 
         The callback basically parses the consumed message and publishes it to the saver exchange
         """
+        # TODO: remove print
+        # print(f'consumed: {body}')      # DEBUG
         parsed_data_encoded = self.parser(body)
-        print(f'consumed: {body}')      # DEBUG
         channel.basic_publish(exchange='parsed_data',
                               routing_key=self.parser.field,
                               body=parsed_data_encoded)
@@ -129,5 +129,6 @@ class SaverClient:
 
         The callback basically calls the db client save method with the consumed message
         """
-        print(f'consumed: {body}')      # DEBUG
+        # TODO Remove print
+        # print(f'consumed: {body}')      # DEBUG
         self.db_client.save(field=method.routing_key, data=body)

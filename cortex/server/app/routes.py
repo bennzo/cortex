@@ -13,8 +13,6 @@ def get_config():
 
 @app.route('/snapshot', methods=['POST'])
 def post_snapshot():
-    # TODO: Support async snapshot posting - user should get an OK response after the snapshot was saved but it shouldn't hold up other users
-    # TODO: Confirm saving files to drive is thread safe with flask
     data = bson.decode(flask.request.data)
     try:
         user, snapshot = data['user'], data['snapshot']

@@ -66,4 +66,3 @@ def run_server(host, port, publish, threaded=True):
     """
     server = Server(host, port, publish)
     server.start(threaded=threaded)
-    # app.run(host=host, port=port, debug=False, use_debugger=False, use_reloader=False, passthrough_errors=True)

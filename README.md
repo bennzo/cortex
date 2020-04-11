@@ -19,16 +19,16 @@ This project is the final assignment in the Advanced System Design (2019) course
 * Docker (for container deployment and pipeline script)
 
 ### Quickstart:
-1. Clone the repository, run the included script and follow the instructions to get the pipeline running:
+1. Clone the repository, set up and run the virtual environment:
     ```bash
     git clone https://github.com/bennzo/cortex.git
     cd cortex
-    ./scripts/run-pipeline.sh
-    ```
-2. Set up and run the virtual environment:
-    ```bash
     ./scripts/install.sh
     source .env/bin/activate
+    ```
+2. Run the included script and follow the instructions to get the pipeline running:
+    ```bash
+    ./scripts/run-pipeline.sh
     ```
 3. Use the Client CLI to upload samples to the server:
     ```bash

@@ -14,20 +14,20 @@ Quickstart
 ^^^^^^^^^^
 
 
-#. Clone the repository, run the included script and follow the instructions to get the pipeline running:
+#. Clone the repository, set up and run the virtual environment:
 
    .. code-block:: bash
 
        git clone https://github.com/bennzo/cortex.git
        cd cortex
-       ./scripts/run-pipeline.sh
+       ./scripts/install.sh
+       source .env/bin/activate
 
-#. Set up and run the virtual environment:
+#. Run the included script and follow the instructions to get the pipeline running:
 
    .. code-block:: bash
 
-       ./scripts/install.sh
-       source .env/bin/activate
+       ./scripts/run-pipeline.sh
 
 #. Use the Client CLI to upload samples to the server:
 

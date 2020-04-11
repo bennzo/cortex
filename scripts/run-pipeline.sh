@@ -125,17 +125,35 @@ function component_menu() {
 }
 
 function clean_containers() {
-  docker ps --filter name=advsysdsgn_beno -aq | xargs docker stop | xargs docker rm
+  echo "The following docker containers will be removed:"
+  docker ps --filter name=advsysdsgn_beno --format '{{.Names}}'
+  read -p "Would you like to proceed? [y/n]" -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    docker ps --filter name=advsysdsgn_beno -aq | xargs docker stop | xargs docker rm
+  else
+    echo "Aborting removal..."
+    exit 1
+  fi
 }
 
 function clean_image() {
-  docker image rm --force advsysdsgn_beno_python_image:latest
+  echo "The following docker image will be removed:"
+  echo "advsysdsgn_beno_python_image:latest"
+  read -p "Would you like to proceed? [y/n]" -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    docker image rm --force advsysdsgn_beno_python_image:latest
+  else
+    echo "Aborting removal..."
+    exit 1
+  fi
 }
 
 function main_menu() {
   title="Hello Madame/Sir, how would you like to set up the hivemind?"
   prompt="Pick an option:"
-  options=("Run Full Pipeline" "Run Single Component" "Clean all docker containers" "Remove python docker image")
+  options=("Run Full Pipeline" "Run Single Component" "Clean related docker containers" "Remove related python docker image")
 
   echo "$title"
   PS3="$prompt "

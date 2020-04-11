@@ -13,10 +13,10 @@ class Saver:
     will be imported from :mod:`cortex.net.db.mongodb` and instantiated.
 
     Args:
-        db_url (:obj:`str`): Database URL in the format <db_name>://<host>:<port>
+        database_url (:obj:`str`): Database URL in the format <db_name>://<host>:<port>
     """
-    def __init__(self, db_url):
-        scheme, host, port = parse_url(db_url)
+    def __init__(self, database_url):
+        scheme, host, port = parse_url(database_url)
         # Connect to db
         db_module = importlib.import_module(name=f'..net.db.{scheme}',
                                             package='cortex.saver')

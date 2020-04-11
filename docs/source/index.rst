@@ -5,7 +5,7 @@
 
 The Magnificent Brain's documentation
 =====================================
-Magnificent Brain is a simple infrastructure projects that enables streaming of cognition snapshots between
+Magnificent Brain is a simple infrastructure project that enables streaming of cognition snapshots between
 a client and a server.
 
 .. toctree::

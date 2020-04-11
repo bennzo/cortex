@@ -1,4 +1,4 @@
-.. _installation:
+.. _gettingstarted:
 
-Installation
-============
+Getting Started
+===============

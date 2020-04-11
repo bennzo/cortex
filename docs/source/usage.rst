@@ -120,7 +120,7 @@ API
        python -m cortex.api run-server \
              --host '127.0.0.1'        \
              --port 5000               \
-             --database 'mongodb://127.0.0.1:27017''
+             --database 'mongodb://127.0.0.1:27017'
 
 CLI
 ~~~

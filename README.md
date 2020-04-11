@@ -28,7 +28,7 @@ This project is the final assignment in the Advanced System Design (2019) course
     ```
 2. Run the included script and follow the instructions to get the pipeline running:
     ```bash
-    ./scripts/run-pipeline.sh
+    sudo ./scripts/run-pipeline.sh
     ```
 3. Use the Client CLI to upload samples to the server:
     ```bash
@@ -39,15 +39,22 @@ This project is the final assignment in the Advanced System Design (2019) course
 ### Install:
 
 **Note:**
-* If you are using a clean OS installation, we recommend the following preliminery steps:
+* If you are using a clean OS installation, the following preliminery steps are recommended:
     * Install basic dependencies:
         ```bash
-        sudo apt install build-essential curl git llvm libbz2-dev libffi-dev\
-        liblzma-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev\
+        sudo apt install build-essential curl git llvm libbz2-dev libffi-dev \
+        liblzma-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev \
         libssl-dev make python-openssl tk-dev wget xz-utils zlib1g-dev
         ```
     * Install Python 3.8
+        ```bash
+        sudo apt install python3.8
+        sudo apt install python3-pip
+        ```
     * Install virtualenv for Python 3.8
+        ```bash
+        python3.8 -m pip install virtualenv
+        ```
     
 1. Clone the repository and enter the directory:
     ```bash
@@ -73,7 +80,7 @@ This project is the final assignment in the Advanced System Design (2019) course
 If you wish to deploy the project components individually inside containers:
 * Install Docker
 * Build the Docker image
-* Run the run-pipeline.sh script and follow the instructions
+* Run the run-pipeline.sh script (with root privileges) and follow the instructions
 
 ## Usage
 ### CLI:
